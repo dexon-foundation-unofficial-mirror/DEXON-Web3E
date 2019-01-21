@@ -152,6 +152,42 @@ int Web3::EthGetTransactionCount(const string* address) {
     return getInt(&output);
 }
 
+string Web3::EthGetDeployedContractAddress(const string* transaction) {
+    string m = "eth_getTransactionReceipt";
+    string p = "[\"" + *transaction + "\"]";
+    string input = generateJson(&m, &p);
+    string output = exec(&input);
+
+    cJSON *root = NULL, *result = NULL, *address = NULL;
+    string deployedAddress;
+
+    root = cJSON_Parse(output.c_str());
+    if (root == NULL) {
+      goto cleanup;
+    }
+    result = cJSON_GetObjectItem(root, "result");
+    if (result == NULL) {
+      goto cleanup;
+    }
+    address = cJSON_GetObjectItem(result, "contractAddress");
+    if (address == NULL) {
+      goto cleanup;
+    }
+    deployedAddress = string(address->valuestring);
+
+cleanup:
+    if (root != NULL) {
+      cJSON_free(root);
+    }
+    if (result != NULL) {
+      cJSON_free(result);
+    }
+    if (address != NULL) {
+      cJSON_free(address);
+    }
+    return deployedAddress;
+}
+
 string Web3::EthCall(const string* from, const char* to, long gas, long gasPrice,
                      const string* value, const string* data) {
     // TODO use gas, gasprice and value

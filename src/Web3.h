@@ -34,6 +34,7 @@ public:
     int EthBlockNumber();
     long long int EthGetBalance(const string* address);
     int EthGetTransactionCount(const string* address);
+    string EthGetDeployedContractAddress(const string* transaction);
     string EthViewCall(const string* data, const char* to);
 
     string EthCall(const string* from, const char* to, long gas, long gasPrice, const string* value, const string* data);
